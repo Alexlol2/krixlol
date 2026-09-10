@@ -3,21 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>@yourname</title>
+  <title>@krix</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-  <!-- Click to Enter Overlay (Required for Audio to Play) -->
+  <!-- Custom Glowing Cursor Dot -->
+  <div class="cursor-dot" id="cursorDot"></div>
+
+  <!-- Click to Enter Overlay -->
   <div id="enterOverlay" class="overlay">
     <p>[ click anywhere to enter ]</p>
   </div>
 
-  <!-- Background Music -->
-  <audio id="bgMusic" src="song.mp4" loop></audio>
+  <!-- Background Image with Blur Effect -->
+  <div class="bg-container" id="bgContainer"></div>
 
-  <!-- Canvas for Falling Black Snowflakes -->
+  <!-- Background Audio (MP3) -->
+  <audio id="bgMusic" src="song.mp3" loop preload="auto"></audio>
+
+  <!-- Canvas for Falling Snowflakes -->
   <canvas id="snowCanvas"></canvas>
 
   <!-- Main Container -->
@@ -28,7 +34,7 @@
       <img src="pfp.png" alt="Profile Picture" class="avatar">
       
       <!-- Username -->
-      <h1 class="username">your name</h1>
+      <h1 class="username">krix</h1>
       
       <!-- Bio -->
       <p class="bio">nothing really matters.</p>
