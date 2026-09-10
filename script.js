@@ -6,23 +6,80 @@ window.addEventListener('mousemove', (e) => {
   cursorDot.style.top = `${e.clientY}px`;
 });
 
-// --- 2. Enter Overlay & Audio Play ---
+// --- 2. Synthetic Click Sound Synthesis ---
+function playClickSound() {
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.04);
+
+    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.04);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.04);
+  } catch (e) {
+    console.log("AudioContext blocked or uninitialized.");
+  }
+}
+
+// --- 3. Enter Overlay, Audio Play, and Typewriter Effect ---
 const overlay = document.getElementById('enterOverlay');
 const bgContainer = document.getElementById('bgContainer');
 const music = document.getElementById('bgMusic');
+const audioToggle = document.getElementById('audioToggle');
+const audioIcon = document.getElementById('audioIcon');
 
-overlay.addEventListener('click', () => {
+function startTypewriter() {
+  const text = "krix";
+  const el = document.getElementById('typewriter');
+  el.innerHTML = "";
+  let i = 0;
+  
+  function type() {
+    if (i < text.length) {
+      el.innerHTML += text.charAt(i);
+      i++;
+      setTimeout(type, 150);
+    }
+  }
+  type();
+}
+
+overlay.addEventListener('click', (e) => {
   overlay.classList.add('hidden');
   bgContainer.classList.add('unblurred');
-  
+  playClickSound();
+  startTypewriter();
+
   music.play().then(() => {
-    console.log("Audio playing successfully.");
+    console.log("Audio playing.");
   }).catch((err) => {
-    console.log("Audio play error: ", err);
+    console.log("Audio playback error: ", err);
   });
 });
 
-// --- 3. 3D Tilt Effect ---
+// Mute/Unmute Toggle
+audioToggle.addEventListener('click', (e) => {
+  e.stopPropagation();
+  playClickSound();
+  if (music.paused) {
+    music.play();
+    audioIcon.className = "fa-solid fa-volume-high";
+  } else {
+    music.pause();
+    audioIcon.className = "fa-solid fa-volume-xmark";
+  }
+});
+
+// --- 4. 3D Tilt Effect ---
 const card = document.getElementById('tiltCard');
 
 window.addEventListener('mousemove', (e) => {
@@ -47,8 +104,8 @@ window.addEventListener('mouseleave', () => {
   card.style.transform = `rotateX(0deg) rotateY(0deg)`;
 });
 
-// --- 4. Falling Snowflakes + Glowing Gems Canvas ---
-const canvas = document.getElementById('snowCanvas');
+// --- 5. Canvas: Snow, Gems, Mouse Trail & Expanding Click Rings ---
+const canvas = document.getElementById('fxCanvas');
 const ctx = canvas.getContext('2d');
 
 function resizeCanvas() {
@@ -59,9 +116,8 @@ resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
 // Dark Snowflakes
-const numFlakes = 60;
+const numFlakes = 50;
 const flakes = [];
-
 for (let i = 0; i < numFlakes; i++) {
   flakes.push({
     x: Math.random() * window.innerWidth,
@@ -73,10 +129,9 @@ for (let i = 0; i < numFlakes; i++) {
   });
 }
 
-// Glowing Gems / Crystals
-const numGems = 25;
+// Glowing Gems
+const numGems = 20;
 const gems = [];
-
 for (let i = 0; i < numGems; i++) {
   gems.push({
     x: Math.random() * window.innerWidth,
@@ -89,6 +144,33 @@ for (let i = 0; i < numGems; i++) {
   });
 }
 
+// Mouse Trail Particles
+const trail = [];
+window.addEventListener('mousemove', (e) => {
+  trail.push({
+    x: e.clientX,
+    y: e.clientY,
+    size: Math.random() * 2.5 + 1,
+    opacity: 0.8,
+    vx: (Math.random() - 0.5) * 0.5,
+    vy: (Math.random() - 0.5) * 0.5
+  });
+});
+
+// Click Rings Pool
+const rings = [];
+window.addEventListener('click', (e) => {
+  playClickSound();
+  rings.push({
+    x: e.clientX,
+    y: e.clientY,
+    radius: 5,
+    maxRadius: 65,
+    opacity: 0.9,
+    lineWidth: 2
+  });
+});
+
 function drawDiamond(x, y, size) {
   ctx.beginPath();
   ctx.moveTo(x, y - size);
@@ -98,10 +180,10 @@ function drawDiamond(x, y, size) {
   ctx.closePath();
 }
 
-function renderParticles() {
+function renderFX() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Render Dark Snowflakes
+  // Render Snowflakes
   flakes.forEach(flake => {
     ctx.beginPath();
     ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
@@ -117,15 +199,14 @@ function renderParticles() {
     }
   });
 
-  // Render Glowing Gem Crystals
+  // Render Gems
   gems.forEach(gem => {
-    // Pulsing opacity effect
     gem.opacity += Math.sin(Date.now() * gem.pulseSpeed) * 0.01;
     if (gem.opacity < 0.2) gem.opacity = 0.2;
     if (gem.opacity > 0.9) gem.opacity = 0.9;
 
     ctx.save();
-    ctx.shadowBlur = 12;
+    ctx.shadowBlur = 10;
     ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
     ctx.fillStyle = `rgba(220, 240, 255, ${gem.opacity})`;
     
@@ -142,7 +223,47 @@ function renderParticles() {
     }
   });
 
-  requestAnimationFrame(renderParticles);
+  // Render Mouse Trail
+  for (let i = trail.length - 1; i >= 0; i--) {
+    const t = trail[i];
+    ctx.beginPath();
+    ctx.arc(t.x, t.y, t.size, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255, 255, 255, ${t.opacity})`;
+    ctx.fill();
+
+    t.x += t.vx;
+    t.y += t.vy;
+    t.opacity -= 0.025;
+
+    if (t.opacity <= 0) {
+      trail.splice(i, 1);
+    }
+  }
+
+  // Render Click Ripple Rings (Scaling up, opacity -> 0%)
+  for (let i = rings.length - 1; i >= 0; i--) {
+    const ring = rings[i];
+    
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(ring.x, ring.y, ring.radius, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(255, 255, 255, ${ring.opacity})`;
+    ctx.lineWidth = ring.lineWidth;
+    ctx.shadowBlur = 12;
+    ctx.shadowColor = 'rgba(255, 255, 255, 0.9)';
+    ctx.stroke();
+    ctx.restore();
+
+    // Scale up and fade out
+    ring.radius += 2.5;
+    ring.opacity -= 0.025;
+
+    if (ring.opacity <= 0 || ring.radius >= ring.maxRadius) {
+      rings.splice(i, 1);
+    }
+  }
+
+  requestAnimationFrame(renderFX);
 }
 
-renderParticles();
+renderFX();
