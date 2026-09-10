@@ -9,6 +9,9 @@
 </head>
 <body>
 
+  <!-- Scanline Overlay for Texture -->
+  <div class="scanlines"></div>
+
   <!-- Custom Glowing Cursor Dot -->
   <div class="cursor-dot" id="cursorDot"></div>
 
@@ -17,14 +20,19 @@
     <p>[ click anywhere to enter ]</p>
   </div>
 
+  <!-- Minimal Audio Control -->
+  <div class="audio-control" id="audioToggle">
+    <i class="fa-solid fa-volume-high" id="audioIcon"></i>
+  </div>
+
   <!-- Background Image Layer -->
   <div class="bg-container" id="bgContainer"></div>
 
   <!-- Background Audio (MP3) -->
   <audio id="bgMusic" src="song.mp3" loop preload="auto"></audio>
 
-  <!-- Canvas for Snowflakes and Glowing Gems -->
-  <canvas id="snowCanvas"></canvas>
+  <!-- Canvas for Trail, Particles, and Click Ring Effect -->
+  <canvas id="fxCanvas"></canvas>
 
   <!-- Main Container -->
   <div class="tilt-card-container">
@@ -36,17 +44,22 @@
         <img src="pfp.png" alt="Profile Picture" class="avatar">
       </div>
       
-      <!-- Username -->
-      <h1 class="username">krix</h1>
+      <!-- Username with Typewriter Effect -->
+      <h1 class="username" id="typewriter"></h1>
       
       <!-- Bio -->
       <p class="bio">wasap im krix a vtag content creator</p>
       
-      <!-- Social Links (Only YouTube) -->
+      <!-- Social Links (YouTube) -->
       <div class="links">
         <a href="https://www.youtube.com/@Krix_VR" target="_blank" class="link-btn youtube-btn">
           <i class="fa-brands fa-youtube"></i> YouTube
         </a>
+      </div>
+
+      <!-- Aesthetic Audio Visualizer Bars -->
+      <div class="equalizer" id="equalizer">
+        <span></span><span></span><span></span><span></span><span></span>
       </div>
 
     </div>
