@@ -1,78 +1,114 @@
-/* Reset default styles */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Courier New', Courier, monospace; /* Monospace aesthetic */
 }
 
 body {
   width: 100vw;
   height: 100vh;
-  background-color: #0d0d0d;
+  background-color: #050505; /* Deep dark background */
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  color: #fff;
+  color: #a0a0a0;
 }
 
-/* Background overlay for dimming/blurring */
-.bg-overlay {
+/* Click to enter overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: opacity 0.8s ease, visibility 0.8s;
+  color: #666;
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+}
+
+.overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Snow Canvas in Background */
+#snowCanvas {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%);
   z-index: 1;
+  pointer-events: none;
 }
 
-/* Container defining the 3D perspective space */
+/* 3D Perspective Container */
 .tilt-card-container {
-  perspective: 1000px; /* Gives depth to 3D transformations */
+  perspective: 1000px;
   z-index: 2;
 }
 
-/* The actual panel that tilts */
+/* Main Dark Aesthetic Card */
 .tilt-card {
   width: 320px;
-  padding: 30px 20px;
-  background: rgba(255, 255, 255, 0.05); /* Semi-transparent panel */
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  backdrop-filter: blur(10px); /* Glassmorphism blur */
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+  padding: 35px 25px;
+  background: rgba(15, 15, 15, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.9);
   text-align: center;
-  transform-style: preserve-3d; /* Allows internal elements to pop in 3D */
-  transition: transform 0.1s ease-out; /* Smooth tilt movement */
+  transform-style: preserve-3d;
+  transition: transform 0.1s ease-out;
 }
 
 /* Avatar styling */
 .avatar {
-  width: 90px;
-  height: 90px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  object-fit: cover;
   margin-bottom: 15px;
-  transform: translateZ(30px); /* Pops out in 3D space */
+  transform: translateZ(30px);
+  filter: grayscale(80%); /* Gives an aesthetic desaturated look */
+  transition: filter 0.3s ease;
 }
 
+.avatar:hover {
+  filter: grayscale(0%);
+}
+
+/* Username */
 .username {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 5px;
+  font-size: 1.4rem;
+  font-weight: 400;
+  letter-spacing: 3px;
+  color: #e0e0e0;
+  margin-bottom: 8px;
   transform: translateZ(25px);
+  text-transform: lowercase;
 }
 
+/* Bio */
 .bio {
-  font-size: 0.85rem;
-  color: #aaa;
-  margin-bottom: 20px;
+  font-size: 0.8rem;
+  color: #555;
+  margin-bottom: 25px;
   transform: translateZ(20px);
+  letter-spacing: 1px;
 }
 
-/* Buttons section */
+/* Links */
 .links {
   display: flex;
   flex-direction: column;
@@ -86,16 +122,19 @@ body {
   justify-content: center;
   gap: 10px;
   padding: 12px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.02);
+  color: #888;
   text-decoration: none;
-  border-radius: 10px;
+  border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.05);
-  font-weight: 500;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
   transition: all 0.3s ease;
 }
 
 .link-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: scale(1.03);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: scale(1.02);
 }
