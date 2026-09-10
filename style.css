@@ -3,7 +3,7 @@
   padding: 0;
   box-sizing: border-box;
   font-family: 'Courier New', Courier, monospace;
-  cursor: none;
+  cursor: none !important;
   user-select: none;
 }
 
@@ -19,7 +19,7 @@ body {
   position: relative;
 }
 
-/* Scanline FX Overlay */
+/* Scanline Overlay */
 .scanlines {
   position: fixed;
   top: 0;
@@ -49,7 +49,6 @@ body {
   z-index: 10000;
   box-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff;
   transform: translate(-50%, -50%);
-  transition: transform 0.05s ease-out;
 }
 
 /* Audio Control Button */
@@ -115,13 +114,13 @@ body {
   visibility: hidden;
 }
 
-/* Canvas for Particles, Trail & Ripple */
+/* Canvas for Effects */
 #fxCanvas {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   z-index: 1;
   pointer-events: none;
 }
@@ -130,7 +129,7 @@ body {
 .tilt-card-container {
   perspective: 1000px;
   z-index: 2;
-  animation: floatIdle 6s ease-in-out infinite alternative;
+  animation: floatIdle 6s ease-in-out infinite alternate;
 }
 
 @keyframes floatIdle {
@@ -152,7 +151,7 @@ body {
   transition: transform 0.1s ease-out;
 }
 
-/* Avatar Wrapper & Glowing Ring Decoration */
+/* Avatar Wrapper & Glowing Ring */
 .avatar-wrapper {
   position: relative;
   width: 110px;
@@ -248,7 +247,7 @@ body {
   transform: scale(1.03);
 }
 
-/* Audio Equalizer Indicator */
+/* Audio Equalizer */
 .equalizer {
   display: flex;
   justify-content: center;
