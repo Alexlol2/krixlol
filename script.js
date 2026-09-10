@@ -1,30 +1,84 @@
+// --- 1. Audio Play on Click ---
+const overlay = document.getElementById('enterOverlay');
+const music = document.getElementById('bgMusic');
+
+overlay.addEventListener('click', () => {
+  overlay.classList.add('hidden');
+  music.play().catch(e => console.log("Audio play blocked:", e));
+});
+
+// --- 2. 3D Tilt Effect ---
 const card = document.getElementById('tiltCard');
 
-// Listen to mouse movement anywhere on the window
 window.addEventListener('mousemove', (e) => {
   const x = e.clientX;
   const y = e.clientY;
 
-  // Find the center of the viewport
   const centerX = window.innerWidth / 2;
   const centerY = window.innerHeight / 2;
 
-  // Calculate position relative to center (-1 to 1 range approx)
   const percentX = (x - centerX) / centerX;
   const percentY = (y - centerY) / centerY;
 
-  // Set maximum rotation degrees
-  const maxTilt = 15;
+  const maxTilt = 12;
 
-  // Calculate tilt rotation
   const rotateX = -percentY * maxTilt;
   const rotateY = percentX * maxTilt;
 
-  // Apply 3D transform to card
   card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
 });
 
-// Optional: Reset position when mouse leaves the browser window
 window.addEventListener('mouseleave', () => {
   card.style.transform = `rotateX(0deg) rotateY(0deg)`;
 });
+
+// --- 3. Falling Black Snowflakes Canvas ---
+const canvas = document.getElementById('snowCanvas');
+const ctx = canvas.getContext('2d');
+
+let width = canvas.width = window.innerWidth;
+let height = canvas.height = window.innerHeight;
+
+window.addEventListener('resize', () => {
+  width = canvas.width = window.innerWidth;
+  height = canvas.height = window.innerHeight;
+});
+
+const numFlakes = 60;
+const flakes = [];
+
+for (let i = 0; i < numFlakes; i++) {
+  flakes.push({
+    x: Math.random() * width,
+    y: Math.random() * height,
+    radius: Math.random() * 2.5 + 1,
+    speedY: Math.random() * 0.8 + 0.2,
+    speedX: Math.random() * 0.4 - 0.2,
+    opacity: Math.random() * 0.5 + 0.3
+  });
+}
+
+function renderSnow() {
+  ctx.clearRect(0, 0, width, height);
+
+  flakes.forEach(flake => {
+    ctx.beginPath();
+    ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
+    // Dark grey/black snowflake color
+    ctx.fillStyle = `rgba(20, 20, 20, ${flake.opacity})`;
+    ctx.fill();
+
+    flake.y += flake.speedY;
+    flake.x += flake.speedX;
+
+    // Reset flake to top if it falls below bottom
+    if (flake.y > height) {
+      flake.y = -10;
+      flake.x = Math.random() * width;
+    }
+  });
+
+  requestAnimationFrame(renderSnow);
+}
+
+renderSnow();
