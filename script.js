@@ -6,7 +6,7 @@ window.addEventListener('mousemove', (e) => {
   cursorDot.style.top = `${e.clientY}px`;
 });
 
-// --- 2. Synthetic Click Sound Synthesis ---
+// --- 2. Synthetic Click Sound ---
 function playClickSound() {
   try {
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -25,12 +25,10 @@ function playClickSound() {
 
     osc.start();
     osc.stop(audioCtx.currentTime + 0.04);
-  } catch (e) {
-    console.log("AudioContext blocked or uninitialized.");
-  }
+  } catch (e) {}
 }
 
-// --- 3. Enter Overlay, Audio Play, and Typewriter Effect ---
+// --- 3. Overlay & Audio Control ---
 const overlay = document.getElementById('enterOverlay');
 const bgContainer = document.getElementById('bgContainer');
 const music = document.getElementById('bgMusic');
@@ -53,20 +51,17 @@ function startTypewriter() {
   type();
 }
 
-overlay.addEventListener('click', (e) => {
+overlay.addEventListener('click', () => {
   overlay.classList.add('hidden');
   bgContainer.classList.add('unblurred');
   playClickSound();
   startTypewriter();
 
-  music.play().then(() => {
-    console.log("Audio playing.");
-  }).catch((err) => {
-    console.log("Audio playback error: ", err);
+  music.play().catch((err) => {
+    console.log("Audio play failed: ", err);
   });
 });
 
-// Mute/Unmute Toggle
 audioToggle.addEventListener('click', (e) => {
   e.stopPropagation();
   playClickSound();
@@ -104,21 +99,22 @@ window.addEventListener('mouseleave', () => {
   card.style.transform = `rotateX(0deg) rotateY(0deg)`;
 });
 
-// --- 5. Canvas: Snow, Gems, Mouse Trail & Expanding Click Rings ---
+// --- 5. Canvas Particles, Mouse Trail, and Click Rings ---
 const canvas = document.getElementById('fxCanvas');
 const ctx = canvas.getContext('2d');
 
+let width, height;
+
 function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  width = canvas.width = window.innerWidth;
+  height = canvas.height = window.innerHeight;
 }
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
 // Dark Snowflakes
-const numFlakes = 50;
 const flakes = [];
-for (let i = 0; i < numFlakes; i++) {
+for (let i = 0; i < 60; i++) {
   flakes.push({
     x: Math.random() * window.innerWidth,
     y: Math.random() * window.innerHeight,
@@ -130,9 +126,8 @@ for (let i = 0; i < numFlakes; i++) {
 }
 
 // Glowing Gems
-const numGems = 20;
 const gems = [];
-for (let i = 0; i < numGems; i++) {
+for (let i = 0; i < 25; i++) {
   gems.push({
     x: Math.random() * window.innerWidth,
     y: Math.random() * window.innerHeight,
@@ -144,29 +139,30 @@ for (let i = 0; i < numGems; i++) {
   });
 }
 
-// Mouse Trail Particles
+// Mouse Trail
 const trail = [];
 window.addEventListener('mousemove', (e) => {
-  trail.push({
-    x: e.clientX,
-    y: e.clientY,
-    size: Math.random() * 2.5 + 1,
-    opacity: 0.8,
-    vx: (Math.random() - 0.5) * 0.5,
-    vy: (Math.random() - 0.5) * 0.5
-  });
+  for (let i = 0; i < 2; i++) {
+    trail.push({
+      x: e.clientX,
+      y: e.clientY,
+      size: Math.random() * 2 + 1,
+      opacity: 0.8,
+      vx: (Math.random() - 0.5) * 0.8,
+      vy: (Math.random() - 0.5) * 0.8
+    });
+  }
 });
 
-// Click Rings Pool
+// Click Rings
 const rings = [];
 window.addEventListener('click', (e) => {
   playClickSound();
   rings.push({
     x: e.clientX,
     y: e.clientY,
-    radius: 5,
-    maxRadius: 65,
-    opacity: 0.9,
+    radius: 4,
+    opacity: 1,
     lineWidth: 2
   });
 });
@@ -181,21 +177,21 @@ function drawDiamond(x, y, size) {
 }
 
 function renderFX() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0, 0, width, height);
 
   // Render Snowflakes
   flakes.forEach(flake => {
     ctx.beginPath();
     ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(40, 40, 40, ${flake.opacity})`;
+    ctx.fillStyle = `rgba(180, 180, 180, ${flake.opacity})`;
     ctx.fill();
 
     flake.y += flake.speedY;
     flake.x += flake.speedX;
 
-    if (flake.y > canvas.height) {
+    if (flake.y > height) {
       flake.y = -10;
-      flake.x = Math.random() * canvas.width;
+      flake.x = Math.random() * width;
     }
   });
 
@@ -206,7 +202,7 @@ function renderFX() {
     if (gem.opacity > 0.9) gem.opacity = 0.9;
 
     ctx.save();
-    ctx.shadowBlur = 10;
+    ctx.shadowBlur = 8;
     ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
     ctx.fillStyle = `rgba(220, 240, 255, ${gem.opacity})`;
     
@@ -217,13 +213,13 @@ function renderFX() {
     gem.y += gem.speedY;
     gem.x += gem.speedX;
 
-    if (gem.y > canvas.height) {
+    if (gem.y > height) {
       gem.y = -10;
-      gem.x = Math.random() * canvas.width;
+      gem.x = Math.random() * width;
     }
   });
 
-  // Render Mouse Trail
+  // Render Trail
   for (let i = trail.length - 1; i >= 0; i--) {
     const t = trail[i];
     ctx.beginPath();
@@ -233,14 +229,14 @@ function renderFX() {
 
     t.x += t.vx;
     t.y += t.vy;
-    t.opacity -= 0.025;
+    t.opacity -= 0.03;
 
     if (t.opacity <= 0) {
       trail.splice(i, 1);
     }
   }
 
-  // Render Click Ripple Rings (Scaling up, opacity -> 0%)
+  // Render Expanding Click Rings
   for (let i = rings.length - 1; i >= 0; i--) {
     const ring = rings[i];
     
@@ -249,16 +245,15 @@ function renderFX() {
     ctx.arc(ring.x, ring.y, ring.radius, 0, Math.PI * 2);
     ctx.strokeStyle = `rgba(255, 255, 255, ${ring.opacity})`;
     ctx.lineWidth = ring.lineWidth;
-    ctx.shadowBlur = 12;
-    ctx.shadowColor = 'rgba(255, 255, 255, 0.9)';
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
     ctx.stroke();
     ctx.restore();
 
-    // Scale up and fade out
     ring.radius += 2.5;
     ring.opacity -= 0.025;
 
-    if (ring.opacity <= 0 || ring.radius >= ring.maxRadius) {
+    if (ring.opacity <= 0) {
       rings.splice(i, 1);
     }
   }
