@@ -1,13 +1,28 @@
-// --- 1. Audio Play on Click ---
+// --- 1. Custom Glowing Cursor ---
+const cursorDot = document.getElementById('cursorDot');
+
+window.addEventListener('mousemove', (e) => {
+  cursorDot.style.left = `${e.clientX}px`;
+  cursorDot.style.top = `${e.clientY}px`;
+});
+
+// --- 2. Enter Overlay & Audio Play ---
 const overlay = document.getElementById('enterOverlay');
+const bgContainer = document.getElementById('bgContainer');
 const music = document.getElementById('bgMusic');
 
 overlay.addEventListener('click', () => {
   overlay.classList.add('hidden');
-  music.play().catch(e => console.log("Audio play blocked:", e));
+  bgContainer.classList.add('unblurred');
+  
+  music.play().then(() => {
+    console.log("Audio playing successfully.");
+  }).catch((err) => {
+    console.log("Audio play error: ", err);
+  });
 });
 
-// --- 2. 3D Tilt Effect ---
+// --- 3. 3D Tilt Effect ---
 const card = document.getElementById('tiltCard');
 
 window.addEventListener('mousemove', (e) => {
@@ -32,49 +47,47 @@ window.addEventListener('mouseleave', () => {
   card.style.transform = `rotateX(0deg) rotateY(0deg)`;
 });
 
-// --- 3. Falling Black Snowflakes Canvas ---
+// --- 4. Falling Snowflakes Canvas ---
 const canvas = document.getElementById('snowCanvas');
 const ctx = canvas.getContext('2d');
 
-let width = canvas.width = window.innerWidth;
-let height = canvas.height = window.innerHeight;
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
 
-window.addEventListener('resize', () => {
-  width = canvas.width = window.innerWidth;
-  height = canvas.height = window.innerHeight;
-});
-
-const numFlakes = 60;
+const numFlakes = 70;
 const flakes = [];
 
 for (let i = 0; i < numFlakes; i++) {
   flakes.push({
-    x: Math.random() * width,
-    y: Math.random() * height,
-    radius: Math.random() * 2.5 + 1,
-    speedY: Math.random() * 0.8 + 0.2,
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    radius: Math.random() * 2 + 1,
+    speedY: Math.random() * 0.8 + 0.3,
     speedX: Math.random() * 0.4 - 0.2,
-    opacity: Math.random() * 0.5 + 0.3
+    opacity: Math.random() * 0.4 + 0.2
   });
 }
 
 function renderSnow() {
-  ctx.clearRect(0, 0, width, height);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   flakes.forEach(flake => {
     ctx.beginPath();
     ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
-    // Dark grey/black snowflake color
-    ctx.fillStyle = `rgba(20, 20, 20, ${flake.opacity})`;
+    // Dark grey snowflakes so they stay visible over Back.png
+    ctx.fillStyle = `rgba(40, 40, 40, ${flake.opacity})`;
     ctx.fill();
 
     flake.y += flake.speedY;
     flake.x += flake.speedX;
 
-    // Reset flake to top if it falls below bottom
-    if (flake.y > height) {
+    if (flake.y > canvas.height) {
       flake.y = -10;
-      flake.x = Math.random() * width;
+      flake.x = Math.random() * canvas.width;
     }
   });
 
