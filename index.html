@@ -3,42 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Bio Page</title>
+  <title>@yourname</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Font Awesome for Social Icons (Optional) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-  <!-- Background Video or Image Container -->
-  <div class="bg-overlay"></div>
+  <!-- Click to Enter Overlay (Required for Audio to Play) -->
+  <div id="enterOverlay" class="overlay">
+    <p>[ click anywhere to enter ]</p>
+  </div>
+
+  <!-- Background Music -->
+  <audio id="bgMusic" src="song.mp4" loop></audio>
+
+  <!-- Canvas for Falling Black Snowflakes -->
+  <canvas id="snowCanvas"></canvas>
 
   <!-- Main Container -->
   <div class="tilt-card-container">
     <div class="tilt-card" id="tiltCard">
       
       <!-- Profile Picture -->
-      <img src="https://via.placeholder.com/100" alt="Avatar" class="avatar">
+      <img src="pfp.png" alt="Profile Picture" class="avatar">
       
-      <!-- Username / Title -->
-      <h1 class="username">YourName</h1>
+      <!-- Username -->
+      <h1 class="username">your name</h1>
       
-      <!-- Short Bio -->
-      <p class="bio">Digital Creator | Developer | Gamer</p>
+      <!-- Bio -->
+      <p class="bio">nothing really matters.</p>
       
-      <!-- Links Section -->
+      <!-- Social Links -->
       <div class="links">
-        <a href="https://discord.gg/yourserver" target="_blank" class="link-btn">
+        <a href="https://discord.com" target="_blank" class="link-btn">
           <i class="fa-brands fa-discord"></i> Discord
         </a>
-        <a href="https://twitter.com/yourhandle" target="_blank" class="link-btn">
-          <i class="fa-brands fa-x-twitter"></i> Twitter / X
+        <a href="https://twitter.com" target="_blank" class="link-btn">
+          <i class="fa-brands fa-x-twitter"></i> Twitter
         </a>
-        <a href="https://github.com/yourusername" target="_blank" class="link-btn">
+        <a href="https://github.com" target="_blank" class="link-btn">
           <i class="fa-brands fa-github"></i> GitHub
         </a>
-        <a href="https://youtube.com/@yourchannel" target="_blank" class="link-btn">
-          <i class="fa-brands fa-youtube"></i> YouTube
+        <a href="https://spotify.com" target="_blank" class="link-btn">
+          <i class="fa-brands fa-spotify"></i> Spotify
         </a>
       </div>
 
